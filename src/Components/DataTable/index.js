@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./DataTable.scss";
 import Filter from "./Filter";
+
 /* export default () => (
   <BootstrapTable
     keyField="id"
@@ -40,7 +41,7 @@ class DataTable extends Component {
       let d = direction === "asc" ? 1 : -1;
 
       const sortNumbers = (a, b) => {
-        return d * (parseFloat(a) - parseFloat(b));
+        return d * (Number(a[field]) - Number(b[field]));
       };
       const sortStrings = (a, b) => {
         return d * (a[field] < b[field] ? -1 : a[field] > b[field] ? 1 : 0);
@@ -59,6 +60,7 @@ class DataTable extends Component {
         sortBy.direction
       );
     }
+
     return data.map(row => (
       <tr className="data-table__row">
         {columns.map(col => (

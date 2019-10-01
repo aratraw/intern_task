@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./Modal.scss";
-
+import cn from "classnames";
 import ReactDOM from "react-dom";
 
 /* 
@@ -21,14 +21,14 @@ class ModalInner extends Component {
 
     return (
       <div>
-        {isOpened ? <div className={"overlay"} onClick={toggle} /> : null}
+        {isOpened && <div className={"overlay"} onClick={toggle} />}
         <div
-          className={
-            "modal-wrapper" + (!isOpened ? " modal-wrapper--closed" : "")
-          }
+          className={cn("modal-wrapper", {
+            "modal-wrapper--closed": !isOpened
+          })}
         >
           <div className="modal-header">
-            <h3>Модальное окно</h3>
+            <h3 className="modal-header__title">Модальное окно</h3>
             <span className="btn-close" onClick={toggle}>
               ×
             </span>

@@ -32,21 +32,22 @@ const columns = [
 ];
 
 class App extends Component {
-  state = { ModalOpened: false };
+  state = { modalOpened: false };
   toggleModal = () => {
-    this.setState({ ModalOpened: !this.state.ModalOpened });
+    const { modalOpened } = this.state;
+    this.setState({ modalOpened: !modalOpened });
   };
   render() {
+    const { modalOpened } = this.state;
     return (
       <div className="App">
         <button
-          className="btn-action btn-action--continue"
-          style={{ float: "left" }}
+          className="open-modal-btn btn-action"
           onClick={this.toggleModal}
         >
           Открыть
         </button>
-        <Modal isOpened={this.state.ModalOpened} toggle={this.toggleModal}>
+        <Modal isOpened={modalOpened} toggle={this.toggleModal}>
           <DataTable columns={columns} data={data} />
         </Modal>
       </div>

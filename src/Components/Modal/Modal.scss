@@ -4,7 +4,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(48, 49, 48, 0.42);
 }
 
 .modal-wrapper {
@@ -31,11 +31,13 @@
   text-align: right;
 }
 
-.modal-header h3 {
-  color: white;
-  float: left;
-  margin: 0;
-  padding: 0;
+.modal-header {
+  &__title {
+    color: white;
+    float: left;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 .modal-body {
@@ -50,13 +52,16 @@
 }
 
 .btn-close {
-  color: white;
+  color: red;
   cursor: pointer;
   float: right;
   font-size: 30px;
   margin: 0;
+  opacity: 0.8;
+
   &:hover {
-    color: black;
+    color: red;
+    opacity: 1;
   }
 }
 
@@ -81,18 +86,4 @@
     background-color: #1b5e20;
     float: right;
   }
-}
-
-.back-drop {
-  background-color: rgba(48, 49, 48, 0.42);
-  height: 100%;
-  position: fixed;
-  transition: all 1.3s;
-  width: 100%;
-}
-
-.open-modal-btn {
-  margin: 15px;
-  padding: 10px;
-  font-weight: bold;
 }
