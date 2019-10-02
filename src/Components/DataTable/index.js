@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import "./DataTable.scss";
-import Filter from "./Filter";
 
 /* export default () => (
   <BootstrapTable
@@ -18,10 +17,10 @@ function getType(value) {
 class DataTable extends Component {
   state = {
     sortBy: {},
-    filters: {}
+    filters: []
   };
 
-  toggleSort(field) {
+  toggleSort = field => e => {
     const { sortBy } = this.state;
     if (sortBy.dataField !== field)
       this.setState({ sortBy: { dataField: field, direction: "asc" } });
@@ -32,9 +31,21 @@ class DataTable extends Component {
           })
         : this.setState({ sortBy: {} });
     }
-  }
+  };
+
+  setFilter = field => e => {
+    const { filters } = this.state;
+    let newFilter =
+      e.target.value != ""
+        ? { dataField: field, value: e.target.value.toLowerCase() }
+        : null;
+    this.setState({
+      filters: [...filters.filter(x => x.dataField != field), newFilter]
+    });
+  };
+
   getTableBody(rawData, columns) {
-    const { sortBy } = this.state;
+    const { sortBy, filters } = this.state;
 
     function sort(arr, field, type, direction) {
       console.log(type);
@@ -60,7 +71,14 @@ class DataTable extends Component {
         sortBy.direction
       );
     }
-
+    if (filters[0]) {
+      data = data.filter(x => {
+        for (var f of filters) {
+          if (!x[f.dataField].toLowerCase().includes(f.value)) return false;
+        }
+        return true;
+      });
+    }
     return data.map(row => (
       <tr className="data-table__row">
         {columns.map(col => (
@@ -79,12 +97,16 @@ class DataTable extends Component {
           <tr>
             {columns.map(col => (
               <th>
-                <p
-                  onClick={col.sort ? () => this.toggleSort(col.dataField) : {}}
-                >
+                <p onClick={col.sort && this.toggleSort(col.dataField)}>
                   {col.text}
                 </p>
-                {col.filter ? <input /> : null}
+                {col.filter && (
+                  <input
+                    type="text"
+                    placeholder="Значение для поиска"
+                    onChange={this.setFilter(col.dataField)}
+                  />
+                )}
               </th>
             ))}
           </tr>
