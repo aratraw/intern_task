@@ -35,12 +35,11 @@ class DataTable extends Component {
 
   setFilter = field => e => {
     const { filters } = this.state;
-    let currentFilter =
-      e.target.value != ""
-        ? { dataField: field, value: e.target.value.toLowerCase() }
-        : null;
+    let newFilters = filters.filter(x => x.dataField != field);
+    let val = e.target.value.toLowerCase();
+    if (val != "") newFilters.push({ dataField: field, value: val });
     this.setState({
-      filters: [...filters.filter(x => x.dataField != field), currentFilter]
+      filters: newFilters
     });
   };
 
@@ -72,6 +71,7 @@ class DataTable extends Component {
       );
     }
     if (filters[0]) {
+      console.log(filters);
       data = data.filter(x => {
         for (var f of filters) {
           if (!x[f.dataField].toLowerCase().includes(f.value)) return false;
