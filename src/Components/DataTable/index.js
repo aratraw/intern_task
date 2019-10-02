@@ -35,12 +35,12 @@ class DataTable extends Component {
 
   setFilter = field => e => {
     const { filters } = this.state;
-    let newFilter =
+    let currentFilter =
       e.target.value != ""
         ? { dataField: field, value: e.target.value.toLowerCase() }
         : null;
     this.setState({
-      filters: [...filters.filter(x => x.dataField != field), newFilter]
+      filters: [...filters.filter(x => x.dataField != field), currentFilter]
     });
   };
 
