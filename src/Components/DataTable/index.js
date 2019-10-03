@@ -1,5 +1,9 @@
 import React, { Component } from "react";
 import "./DataTable.scss";
+import "dayjs";
+import dayjs from "dayjs";
+
+import { regExpLiteral } from "@babel/types";
 
 /* export default () => (
   <BootstrapTable
@@ -11,6 +15,8 @@ import "./DataTable.scss";
 ); */
 function getType(value) {
   if (!isNaN(value)) return "number";
+  let dateRegex = /(?<day>\d{1,2})[-\s\/.](?<month>\d{1,2}|[а-я]*)[-\s\/.](?<year>\d{4})/;
+  if (dateRegex.test(value)) return "date";
   return "string";
 }
 
@@ -35,9 +41,9 @@ class DataTable extends Component {
 
   setFilter = field => e => {
     const { filters } = this.state;
-    let newFilters = filters.filter(x => x.dataField != field);
+    let newFilters = filters.filter(x => x.dataField !== field);
     let val = e.target.value.toLowerCase();
-    if (val != "") newFilters.push({ dataField: field, value: val });
+    if (val !== "") newFilters.push({ dataField: field, value: val });
     this.setState({
       filters: newFilters
     });
@@ -56,22 +62,92 @@ class DataTable extends Component {
       const sortStrings = (a, b) => {
         return d * (a[field] < b[field] ? -1 : a[field] > b[field] ? 1 : 0);
       };
+      const sortDates = (a, b) => {
+        function parseMonth(value) {
+          if (!isNaN(value)) return value;
+          switch (value) {
+            case "января":
+              return 1;
+              break;
+            case "февраля":
+              return 2;
+              break;
+            case "марта":
+              return 3;
+              break;
+            case "апреля":
+              return 4;
+              break;
+            case "мая":
+              return 5;
+              break;
+            case "июня":
+              return 6;
+              break;
+            case "июля":
+              return 7;
+              break;
+            case "августа":
+              return 8;
+              break;
+            case "сентября":
+              return 9;
+              break;
+            case "октября":
+              return 10;
+              break;
+            case "декабря":
+              return 11;
+              break;
+          }
+        }
+        let dateRegex = /(?<day>\d{1,2})[-\s\/.](?<month>\d{1,2}|[а-я]*)[-\s\/.](?<year>\d{4})/;
+        let resA = dateRegex.exec(a.date);
+        let dateA = dayjs(
+          new Date(
+            resA.groups.year,
+            parseMonth(resA.groups.month),
+            resA.groups.day
+          )
+        );
+        let resB = dateRegex.exec(b.date);
 
-      return arr.slice().sort(type === "number" ? sortNumbers : sortStrings);
+        let dateB = dayjs(
+          new Date(
+            resB.groups.year,
+            parseMonth(resB.groups.month),
+            resB.groups.day
+          )
+        );
+
+        return d * (dateA.isBefore(dateB) ? -1 : dateB.isBefore(dateA) ? 1 : 0);
+      };
+      let sorter;
+      switch (type) {
+        case "number":
+          sorter = sortNumbers;
+          break;
+        case "string":
+          sorter = sortStrings;
+          break;
+        default:
+          sorter = sortDates;
+          break;
+      }
+      return arr.slice().sort(sorter);
     }
     let data = rawData;
-
+    data.map(x => ({ ...x, date: dayjs(x.date) }));
     if (sortBy.dataField) {
-      console.log(getType(data[0][sortBy.dataField]));
       data = sort(
         rawData,
         sortBy.dataField,
         getType(data[0][sortBy.dataField]),
         sortBy.direction
       );
+      console.log(data, rawData);
     }
     if (filters[0]) {
-      console.log(filters);
       data = data.filter(x => {
         for (var f of filters) {
           if (!x[f.dataField].toLowerCase().includes(f.value)) return false;
