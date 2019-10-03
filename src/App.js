@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Modal from "./Components/Modal";
 
 import DataTable from "./Components/DataTable";
-import data from "./fixtures"; //no need for mobX or database
+import data from "./fixtures";
 
 const columns = [
   {

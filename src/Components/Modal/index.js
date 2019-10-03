@@ -3,18 +3,6 @@ import "./Modal.scss";
 import cn from "classnames";
 import ReactDOM from "react-dom";
 
-/* 
-        <Button color="dark" onClick={this.toggle}>
-          Открыть форму
-        </Button>
-
-        <Modal isOpen={this.state.isOpen} toggle={this.toggle}>
-          <ModalHeader toggle={this.toggle}>Модалка</ModalHeader>
-          <ModalBody>
-            <DataTable />
-          </ModalBody>
-        </Modal> */
-
 class ModalInner extends Component {
   render() {
     const { isOpened, toggle, children } = this.props;
