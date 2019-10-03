@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import "./DataTable.scss";
-import "dayjs";
-import dayjs from "dayjs";
 
-import { regExpLiteral } from "@babel/types";
-
+import moment from "moment";
+import "moment/locale/ru";
+moment.locale("ru");
 /* export default () => (
   <BootstrapTable
     keyField="id"
@@ -15,8 +14,11 @@ import { regExpLiteral } from "@babel/types";
 ); */
 function getType(value) {
   if (!isNaN(value)) return "number";
-  let dateRegex = /(?<day>\d{1,2})[-\s\/.](?<month>\d{1,2}|[а-я]*)[-\s\/.](?<year>\d{4})/;
-  if (dateRegex.test(value)) return "date";
+  if (
+    moment(value, "DD.MM.YYYY").isValid() ||
+    moment(value, "DD MMMM YYYY").isValid()
+  )
+    return "date";
   return "string";
 }
 
@@ -63,64 +65,12 @@ class DataTable extends Component {
         return d * (a[field] < b[field] ? -1 : a[field] > b[field] ? 1 : 0);
       };
       const sortDates = (a, b) => {
-        function parseMonth(value) {
-          if (!isNaN(value)) return value;
-          switch (value) {
-            case "января":
-              return 1;
-              break;
-            case "февраля":
-              return 2;
-              break;
-            case "марта":
-              return 3;
-              break;
-            case "апреля":
-              return 4;
-              break;
-            case "мая":
-              return 5;
-              break;
-            case "июня":
-              return 6;
-              break;
-            case "июля":
-              return 7;
-              break;
-            case "августа":
-              return 8;
-              break;
-            case "сентября":
-              return 9;
-              break;
-            case "октября":
-              return 10;
-              break;
-            case "декабря":
-              return 11;
-              break;
-          }
-        }
-        let dateRegex = /(?<day>\d{1,2})[-\s\/.](?<month>\d{1,2}|[а-я]*)[-\s\/.](?<year>\d{4})/;
-        let resA = dateRegex.exec(a.date);
-        let dateA = dayjs(
-          new Date(
-            resA.groups.year,
-            parseMonth(resA.groups.month),
-            resA.groups.day
-          )
-        );
-        let resB = dateRegex.exec(b.date);
-
-        let dateB = dayjs(
-          new Date(
-            resB.groups.year,
-            parseMonth(resB.groups.month),
-            resB.groups.day
-          )
-        );
-
-        return d * (dateA.isBefore(dateB) ? -1 : dateB.isBefore(dateA) ? 1 : 0);
+        let dateA = moment(a.date, "DD.MM.YYYY");
+        dateA = dateA.isValid() ? dateA : moment(a.date, "DD MMMM YYYY");
+        let dateB = moment(b.date, "DD.MM.YYYY");
+        dateB = dateB.isValid() ? dateB : moment(b.date, "DD MMMM YYYY");
+        console.log(a.date, b.date, dateA.isSameOrBefore(dateB));
+        return d * (dateA.isSameOrBefore(dateB) ? -1 : 1);
       };
       let sorter;
       switch (type) {
@@ -137,7 +87,7 @@ class DataTable extends Component {
       return arr.slice().sort(sorter);
     }
     let data = rawData;
-    data.map(x => ({ ...x, date: dayjs(x.date) }));
+    // data.map(x => ({ ...x, date: moment(x.date) }));
     if (sortBy.dataField) {
       data = sort(
         rawData,
